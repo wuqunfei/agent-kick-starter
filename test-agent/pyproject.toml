@@ -1,7 +1,0 @@
-[project]
-name = "microsoft-agent-on-aws"
-version = "1.0.0"
-description = "Template for Microsoft Agent Framework on AWS"
-dependencies = [
-    "microsoft-agent-framework>=1.0.0", "boto3>=1.28.0"
-]
