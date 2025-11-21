@@ -1,7 +1,0 @@
-[project]
-name = "pydantic-ai-cross-platform"
-version = "1.0.0"
-description = "Template for Pydantic AI framework that works across platforms"
-dependencies = [
-    "pydantic-ai>=0.0.1"
-]

@@ -47,7 +47,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project.scripts]
-genai-agent = "cli.main:app"
+ak = "cli.main:app"
 
 [tool.hatch.build.targets.wheel]
 packages = [

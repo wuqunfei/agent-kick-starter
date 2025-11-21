@@ -3,13 +3,13 @@ from typing import Optional
 
 # Initialize the main Typer application
 app = typer.Typer(
-    name="genai-agent",
+    name="ak",
     help="A CLI tool for production-ready Generative AI Agent templates",
     no_args_is_help=True
 )
 
 # Import and register subcommands
-from .init import init_app
+from .init import run_init
 from .deploy import deploy_app
 from .monitor import monitor_app
 
@@ -17,7 +17,15 @@ from .monitor import monitor_app
 from services.template_service import TemplateService
 
 # Register subcommands
-app.add_typer(init_app, name="init", help="Initialize a new GenAI agent project")
+@app.command("init")
+def init(
+    name: Optional[str] = typer.Argument(None, help="Name for the new agent project"),
+    provider: Optional[str] = typer.Option(None, "--provider", help="Cloud provider (aws, azure, gcp)"),
+    framework: Optional[str] = typer.Option(None, "--framework", help="Agent framework (microsoft, amazon, google, pydantic)"),
+    template_version: Optional[str] = typer.Option(None, "--template-version", help="Version of the template to use")
+):
+    """Initialize a new GenAI agent project (interactive when missing args)"""
+    run_init(name, provider, framework, template_version)
 app.add_typer(deploy_app, name="deploy", help="Deploy a GenAI agent to cloud platform")
 app.add_typer(monitor_app, name="metrics", help="Retrieve performance metrics for deployed agents")
 
