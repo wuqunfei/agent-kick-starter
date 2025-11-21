@@ -59,7 +59,10 @@ def init_command(
 
     # Generate template ID based on framework, provider, and version
     version = template_version or "1.0.0"
-    template_id = f"{framework.lower()}-{provider.lower()}-v{version}"
+    if framework.lower() == "pydantic":
+        template_id = f"pydantic-cross-v{version}"
+    else:
+        template_id = f"{framework.lower()}-{provider.lower()}-v{version}"
 
     # Initialize the project in the current directory
     current_dir = Path.cwd()

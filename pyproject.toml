@@ -55,10 +55,18 @@ packages = [
     "src/services",
     "src/models",
 ]
+include = [
+    "src/templates/**",
+    "src/lib/**",
+]
 
 [tool.hatch.build.targets.editable]
 packages = [
     "src/cli",
     "src/services",
     "src/models",
+]
+include = [
+    "src/templates/**",
+    "src/lib/**",
 ]

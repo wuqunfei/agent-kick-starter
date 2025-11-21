@@ -160,6 +160,25 @@ venv/
 .venv/
 """)
 
+        (target_dir / ".env.example").write_text(
+            f"AGENT_NAME=hello-agent\nMODEL_NAME=gpt-4\nMODEL_PROVIDER={template.cloud_provider}\n"
+        )
+        (target_dir / "src" / "config.py").write_text(
+            "from pydantic_settings import BaseSettings, SettingsConfigDict\n\n"
+            "class Settings(BaseSettings):\n"
+            "    agent_name: str = \"hello-agent\"\n"
+            "    model_name: str = \"gpt-4\"\n"
+            "    model_provider: str | None = None\n\n"
+            "    model_config = SettingsConfigDict(env_file=\".env\", env_file_encoding=\"utf-8\")\n"
+        )
+        (target_dir / "src" / "app.py").write_text(
+            "from config import Settings\n\n"
+            "def run():\n"
+            f"    s = Settings()\n    print(f\"{{s.agent_name}}: Hello from {template.framework} on {{s.model_provider or 'unknown'}} using {{s.model_name}}\")\n\n"
+            "if __name__ == \"__main__\":\n"
+            "    run()\n"
+        )
+
         # Create framework-specific files
         if template.framework == AgentFramework.MICROSOFT:
             (target_dir / "src" / "microsoft_agent.py").write_text("# Microsoft Agent implementation\n")
@@ -173,16 +192,37 @@ venv/
         # Create cloud provider-specific files
         if template.cloud_provider == CloudProvider.AWS:
             (target_dir / "infrastructure").mkdir(exist_ok=True)
-            (target_dir / "infrastructure" / "aws").mkdir(exist_ok=True)
-            (target_dir / "infrastructure" / "aws" / "main.tf").write_text("# AWS Infrastructure as Code\n")
+            pulumi_dir = target_dir / "infrastructure" / "pulumi" / "aws"
+            pulumi_dir.mkdir(parents=True, exist_ok=True)
+            (pulumi_dir / "Pulumi.yaml").write_text("name: agent-aws-infra\nruntime: python\n")
+            (pulumi_dir / "__main__.py").write_text(
+                "import pulumi\nfrom pulumi_aws import s3\n"
+                "bucket = s3.Bucket('agent-bucket')\n"
+                "pulumi.export('bucket_name', bucket.id)\n"
+            )
+            (pulumi_dir / "requirements.txt").write_text("pulumi>=3.0.0\npulumi-aws>=6.0.0\n")
         elif template.cloud_provider == CloudProvider.AZURE:
             (target_dir / "infrastructure").mkdir(exist_ok=True)
-            (target_dir / "infrastructure" / "azure").mkdir(exist_ok=True)
-            (target_dir / "infrastructure" / "azure" / "main.tf").write_text("# Azure Infrastructure as Code\n")
+            pulumi_dir = target_dir / "infrastructure" / "pulumi" / "azure"
+            pulumi_dir.mkdir(parents=True, exist_ok=True)
+            (pulumi_dir / "Pulumi.yaml").write_text("name: agent-azure-infra\nruntime: python\n")
+            (pulumi_dir / "__main__.py").write_text(
+                "import pulumi\nfrom pulumi_azure_native import resources\n"
+                "rg = resources.ResourceGroup('agent-rg')\n"
+                "pulumi.export('resource_group', rg.name)\n"
+            )
+            (pulumi_dir / "requirements.txt").write_text("pulumi>=3.0.0\npulumi-azure-native>=2.0.0\n")
         elif template.cloud_provider == CloudProvider.GCP:
             (target_dir / "infrastructure").mkdir(exist_ok=True)
-            (target_dir / "infrastructure" / "gcp").mkdir(exist_ok=True)
-            (target_dir / "infrastructure" / "gcp" / "main.tf").write_text("# GCP Infrastructure as Code\n")
+            pulumi_dir = target_dir / "infrastructure" / "pulumi" / "gcp"
+            pulumi_dir.mkdir(parents=True, exist_ok=True)
+            (pulumi_dir / "Pulumi.yaml").write_text("name: agent-gcp-infra\nruntime: python\n")
+            (pulumi_dir / "__main__.py").write_text(
+                "import pulumi\nfrom pulumi_gcp import storage\n"
+                "bucket = storage.Bucket('agent-bucket')\n"
+                "pulumi.export('bucket_name', bucket.name)\n"
+            )
+            (pulumi_dir / "requirements.txt").write_text("pulumi>=3.0.0\npulumi-gcp>=7.0.0\n")
 
         return target_dir
 

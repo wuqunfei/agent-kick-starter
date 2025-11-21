@@ -1,0 +1,7 @@
+[project]
+name = "google-adk-on-gcp"
+version = "1.0.0"
+description = "Template for Google ADK on Google Cloud Platform"
+dependencies = [
+    "google-adk>=1.0.0"
+]
