@@ -58,6 +58,7 @@ As a developer, I want to evaluate and monitor my deployed GenAI agent's perform
 - How does the system handle network interruptions during deployment?
 - What if the selected cloud provider does not support certain required services for the GenAI agent?
 - How does the system handle conflicts with existing cloud resources when deploying?
+- How does the system handle cloud provider API rate limits when continuing with best effort approach?
 
 ## Requirements *(mandatory)*
 
@@ -73,6 +74,11 @@ As a developer, I want to evaluate and monitor my deployed GenAI agent's perform
 - **FR-008**: System MUST support multiple environments (development, staging, production) with appropriate configuration management
 - **FR-009**: System MUST include built-in health checks and status reporting for deployed agents
 - **FR-010**: Users MUST be able to upgrade their projects to newer versions of the templates with clear migration paths
+- **FR-011**: System MUST store cloud provider credentials in plain text config files but with appropriate file permissions (0600)
+- **FR-012**: System MUST utilize cloud-native monitoring solutions (CloudWatch, Azure Monitor, Google Cloud Operations) for metrics collection and display
+- **FR-013**: System MUST enforce single-user, single-task execution with no concurrent operation support to maintain simplicity
+- **FR-014**: System MUST handle rate limiting by continuing with best effort approach and reporting rate limit information when possible
+- **FR-015**: System MUST fetch templates remotely on each use rather than storing them locally
 
 ### Key Entities
 
@@ -90,3 +96,13 @@ As a developer, I want to evaluate and monitor my deployed GenAI agent's perform
 - **SC-003**: 90% of users can successfully complete their first GenAI agent deployment without requiring external support
 - **SC-004**: Deployment process reduces infrastructure setup time by at least 70% compared to manual configuration
 - **SC-005**: Evaluation and monitoring features provide actionable insights for 80% of common performance issues
+
+## Clarifications
+
+### Session 2025-11-20
+
+- Q: How should cloud credentials be handled and stored securely? → A: Store credentials in plain text config files
+- Q: What specific metrics should be collected and how should they be output? → A: Use only cloud-native monitoring (CloudWatch, Azure Monitor, Google Cloud Operations) without custom metrics
+- Q: What are the expected usage patterns and concurrent user limits? → A: Single-user, single-task execution with no concurrent operation support
+- Q: How should the system handle cloud provider API rate limiting? → A: Ignore rate limits and continue with best effort
+- Q: How are template updates and versioning managed locally? → A: Templates stored only remotely and fetched on each use
